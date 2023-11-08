@@ -1,0 +1,24 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jack.web.dispatch_order.mapper.DispatchOrderMapper">
+
+    <select id="getListById" resultType="com.jack.web.dispatch_order.entity.DispatchOrder">
+        select
+            dor.*,
+            ur.repair_content,
+            ur.repair_address,
+            ur.phone,
+            ur.commit_time
+        from dispatch_order dor
+                 left join user_repair ur on dor.order_source = ur.repair_id
+        where dor.dispatch_user_id = #{parm.userId}
+        <if test="parm.repairContent != null and parm.repairContent != ''">
+            and ur.repair_content like concat('%',#{parm.repairContent},'%')
+        </if>
+        order by dor.dispatch_time desc
+    </select>
+
+
+</mapper>

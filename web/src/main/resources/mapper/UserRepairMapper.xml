@@ -1,0 +1,34 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jack.web.user_repair.mapper.UserRepairMapper">
+
+    <select id="getList" resultType="com.jack.web.user_repair.entity.UserRepair">
+        SELECT ur.*,
+               su.login_name as dispatchName
+        FROM user_repair ur
+                 left join dispatch_order dor on ur.repair_id = dor.order_source
+                 left join sys_user su on su.user_id = dor.dispatch_user_id
+        where 1=1
+        <if test="parm.repairContent != null and parm.repairContent != ''">
+            and ur.repair_content like concat('%',#{parm.repairContent},'%')
+        </if>
+        order by ur.commit_time DESC
+    </select>
+
+    <select id="getListById" resultType="com.jack.web.user_repair.entity.UserRepair">
+        SELECT ur.*,
+        su.login_name as dispatchName,
+        dor.dispatch_num
+        FROM user_repair ur
+        left join dispatch_order dor on ur.repair_id = dor.order_source
+        left join sys_user su on su.user_id = dor.dispatch_user_id
+        where ur.user_id = #{parm.userId}
+        <if test="parm.repairContent != null and parm.repairContent != ''">
+            and ur.repair_content like concat('%',#{parm.repairContent},'%')
+        </if>
+        order by ur.commit_time DESC
+    </select>
+
+</mapper>

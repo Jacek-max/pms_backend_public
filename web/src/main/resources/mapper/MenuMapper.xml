@@ -24,7 +24,6 @@
     <select id="getMenuByRoleId" parameterType="long" resultType="com.jack.web.menu.entity.Menu">
         select m.* from sys_role_menu as rm,sys_menu as m
         where rm.menu_id = m.menu_id and rm.role_id = #{roleId}
-
     </select>
 
 </mapper>

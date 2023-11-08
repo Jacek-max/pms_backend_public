@@ -16,7 +16,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public List<Menu> getList() {
 
         QueryWrapper<Menu> query = new QueryWrapper<>();
-        query.lambda().orderByAsc(Menu::getName);
+        query.lambda().orderByAsc(Menu::getName).orderByAsc(Menu::getOrderNum);
         List<Menu> menus = this.baseMapper.selectList(query);
         List<Menu> menus1 = MakeMenuTree.makeTree(menus, 0L);
         return menus1;
@@ -24,9 +24,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     @Override
     public List<Menu> getParentList() {
-        String[] types = {"0","1"};
+        String[] types = {"0", "1"};
         QueryWrapper<Menu> query = new QueryWrapper<>();
-        query.lambda().in(Menu::getType,types).orderByAsc(Menu::getOrderNum);
+        query.lambda().in(Menu::getType, types).orderByAsc(Menu::getOrderNum);
         List<Menu> menus = this.baseMapper.selectList(query);
         Menu menu = new Menu();
         menu.setMenuId(0L);

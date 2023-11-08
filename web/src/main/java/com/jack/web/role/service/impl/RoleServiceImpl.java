@@ -1,5 +1,6 @@
 package com.jack.web.role.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -53,9 +54,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         User user = userService.getById(parm.getUserId());
         //查询权限
         List<Menu> list = null;
-        if(user.getIsAdmin().equals("1")){ //如果是超级管理员，拥有全部权限
-            list =menuService.list();
-        }else{ //如果不是，根据用户id查询
+        if (user.getIsAdmin().equals("1")) { //如果是超级管理员，拥有全部权限
+            list = menuService.list(new LambdaQueryWrapper<Menu>().orderByAsc(Menu::getOrderNum));
+        } else { //如果不是，根据用户id查询
             list = menuService.getMenuByUserId(parm.getUserId());
         }
         //组装成树的格式
@@ -64,7 +65,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         List<Menu> roleList = menuService.getMenuByRoleId(parm.getRoleId());
         //存角色原来权限的id
         List<Long> ids = new ArrayList<>();
-        Optional.ofNullable(roleList).orElse(new ArrayList<>()).stream().filter(item ->item != null).forEach(item->{
+        Optional.ofNullable(roleList).orElse(new ArrayList<>()).stream().filter(item -> item != null).forEach(item -> {
             ids.add(item.getMenuId());
         });
         RolePermissionVo vo = new RolePermissionVo();
@@ -78,9 +79,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     public void saveAssign(RolePermissionParm parm) {
         //删除原来的权限
         QueryWrapper<RoleMenu> query = new QueryWrapper<>();
-        query.lambda().eq(RoleMenu::getRoleId,parm.getRoleId());
+        query.lambda().eq(RoleMenu::getRoleId, parm.getRoleId());
         roleMenuService.remove(query);
         //保存新权限
-        roleMenuService.saveRoleMenu(parm.getRoleId(),parm.getList());
+        roleMenuService.saveRoleMenu(parm.getRoleId(), parm.getList());
     }
 }
